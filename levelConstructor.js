@@ -1,7 +1,8 @@
-import Entity from "./entity.js";
+import Player from "./player.js";
+import Wall from "./wall.js";
 
 class LevelGenerator {
-    constructor(context2d) {
+    constructor() {
         this.levelBlockDirectories=[
             './levelBlocks/topLeft/','./levelBlocks/middleLeft/', './levelBlocks/bottomLeft/',
             './levelBlocks/topMiddle/', './levelBlocks/centreMiddle/', './levelBlocks/bottomMiddle/',
@@ -9,17 +10,20 @@ class LevelGenerator {
         ];
 
         this.blockDirectoriesIndex = 0;
-
-        this.context2d = context2d;
         this.levelLayout = [];
 
         this.totalVerticalLevelBlocks = 3;
         this.totalColumnNumber = 3;
         this.blockSize = 10;
         this.arrayIndexOffset = 0;
-
-        this.buildLevelLayout();
     }
+
+    //todo redo the level construction method.
+    // block out a clear path to the goal
+    // fill out the other blocks with random blocks from any directory
+    // then set a solid impassable frame around the edge of the level.
+    // look into marking elements within none essential map blocks to assist in the
+    // entity spawning process. i.e mark locations to spawn non essential gameplay elements.
 
     async buildLevelLayout(){
         //get level blocks from txt files then push them into levelLayout[]
@@ -36,8 +40,6 @@ class LevelGenerator {
             let filename = 'level' + fileIndex + '.txt';
 
             await this.processLevelData(folderPath + filename);
-
-          //  console.log(folderPath + filename + "arrayIndex :" + this.blockDirectoriesIndex);
 
             //move though the file directories on first loop, pen ultimate loop and last loop
             //to arrive in the appropriate folder when selecting the level blocks.
@@ -66,7 +68,6 @@ class LevelGenerator {
             }
         }
 
-        this.displayLevel();
     }
 
     //gets level data then pushes, or appends it, to the levelLayout[]
@@ -82,9 +83,6 @@ class LevelGenerator {
     //otherwise append data to the end of the indices to build out the level layout.
         let levelBlocks = text.split('\n');
 
-        console.log("size: " + levelBlocks.length );
-        console.log (levelBlocks);
-
         for(let i = 0; i < levelBlocks.length; i ++){
             if (firstColumn === true ) {
                 this.levelLayout.push(levelBlocks[i]);
@@ -94,6 +92,8 @@ class LevelGenerator {
                 this.levelLayout[arrayIndex] += levelBlocks[i];
             }
         }
+       // console.log("built level");
+       // console.log(this.levelLayout);
     }
 
     //this keeps track of which index needs to be used in levelLayout[] when appending data
@@ -115,27 +115,13 @@ class LevelGenerator {
     }
 
 
-    getLevel(){
+    async getLevel(){
+        await this.buildLevelLayout();
+
         return this.levelLayout;
     }
 
-    //todo handle drawing the map elsewhere
-    displayLevel(){
-        const cellSize = 32;
-     //   console.log("display level called");
-     //   console.log("array len: " +  this.levelLayout.length);
-      //  console.log(this.levelLayout);
 
-        for (let verticalIndex = 0; verticalIndex < this.levelLayout.length; verticalIndex++){
-            for (let horizontalIndex = 0; horizontalIndex < this.levelLayout[verticalIndex].length; horizontalIndex++){
-                if (this.levelLayout[verticalIndex][horizontalIndex] === "W" ||
-                    this.levelLayout[verticalIndex][horizontalIndex] === "w"){
-                    let wall = new Entity(horizontalIndex * cellSize, verticalIndex * cellSize, this.context2d);
-                    wall.draw();
-                }
-            }
-        }
-    }
 }
 
 export default LevelGenerator;

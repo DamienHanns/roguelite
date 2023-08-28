@@ -8,6 +8,7 @@ class CanvasManager {
             //todo create an adjustable viewport for the render.
             // get rid of the multiplication of native game grid size
             //todo look into the flex display property
+            //todo make any visible surround to the game an appropriate color.
 
             this.gameGrid.width = 320 * 3 ;
             this.gameGrid.height = 320 * 3;
