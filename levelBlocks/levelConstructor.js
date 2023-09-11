@@ -1,5 +1,5 @@
-import Player from "./player.js";
-import Wall from "./wall.js";
+import Player from "../entities/player.js";
+import Wall from "../entities/wall.js";
 
 class LevelGenerator {
     constructor() {

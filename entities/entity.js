@@ -1,6 +1,9 @@
 //all object base class
 class Entity {
-    constructor(context2d, posX = 0, posY = 0, color = "orange",) {
+    constructor(id, context2d, posX = 0, posY = 0, color = "orange",) {
+
+        this.id = id;
+
         this.position = {
             x: posX,
             y: posY,
@@ -21,7 +24,11 @@ class Entity {
     draw(){
         this.context2d.fillStyle = this.color;
         this.context2d.fillRect(this.position.x, this.position.y, this.size.x, this.size.y);
-        console.log("draw called");
+     //   console.log("draw called");
+    }
+
+    update(entityManager){
+
     }
 
 }

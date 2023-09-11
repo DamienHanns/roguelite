@@ -5,6 +5,10 @@ class Wall extends Entity {
         super(context2d, posX, posY, color);
     }
 
+    update() {
+        this.color = "red";
+        this.draw();
+    }
 }
 
 export default Wall;

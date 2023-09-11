@@ -32,6 +32,12 @@ class CanvasManager {
         return this.context2d;
     }
 
+    clearContext2d(){
+        this.context2d.clearRect(0, 0, this.gameGrid.width, this.gameGrid.height);
+        this.context2d.fillStyle = "black";
+        this.context2d.fillRect(0,0, this.gameGrid.width, this.gameGrid.height);
+    }
+
     getGameGrid(){
         return this.gameGrid;
     }

@@ -1,23 +1,38 @@
 //TODO spawn player at pos 14,1 in the level
-//todo spawn enemies.
 //todo spawn goal
 
-import Wall from "./wall.js";
-import Player from "./player.js";
-import Slime from "./slime.js";
+import Wall from "./entities/wall.js";
+import Player from "./entities/player.js";
+import Slime from "./entities/slime.js";
 
 import CollisionChecker from "./collisionChecker.js";
 
 class EntityManager{
 
-    constructor(context2d) {
+    constructor(canvasManager) {
         this.checkPosition = new CollisionChecker();
 
         this.entites = [];
         this.intialLevelData = [];
 
+        this.entityCount = 0;
+
         this.cellSize = 32;
-        this.context2d = context2d;
+
+        this.canvasManager = canvasManager;
+        this.context2d = canvasManager.getContext2d();
+
+        this.stopRunningLogic = false;
+
+        document.addEventListener('keydown', (event) => this.handleQuitKey(event));
+    }
+
+    //stop game logic running
+    handleQuitKey(event){
+        if (event.key === ' ') {
+            this.stopRunningLogic = !this.stopRunningLogic;
+            console.log('Spacebar was pressed');
+        }
     }
 
     //todo make sure that important things are placed where the player can access
@@ -40,7 +55,7 @@ class EntityManager{
                     for (let horizontalIndex = 0; horizontalIndex < entityToSpawn[verticalIndex].length; horizontalIndex++){
                         if (entityToSpawn[verticalIndex][horizontalIndex] === "W" ||
                             entityToSpawn[verticalIndex][horizontalIndex] === "w"){
-                            let wall = new Wall(this.context2d, horizontalIndex * this.cellSize, verticalIndex * this.cellSize);
+                            let wall = new Wall(this.entityCount++, this.context2d, horizontalIndex * this.cellSize, verticalIndex * this.cellSize);
                             wall.draw();
 
                             this.entites.push(wall);
@@ -68,28 +83,23 @@ class EntityManager{
 
         } else {
             console.log("SINGLE ENTITY SPAWNING BRANCH");
-            let spawnedEntity = new entityToSpawn(this.context2d);
+            let spawnedEntity = new entityToSpawn(this.entityCount++, this.context2d);
             spawnedEntity.draw();
         }
     }
 
+    //spawn in and increment the entity count to give each entity a unique id.l
     instantiateEntity(entityId){
         let newEntity;
         switch (entityId){
             case 0:
-                newEntity = new Player(this.context2d, 5 * this.cellSize, 5 * this.cellSize);
-                //let originalString =  this.intialLevelData[newEntity.position.y];
+                newEntity = new Player(this.entityCount++,this.context2d, 5 * this.cellSize, 5 * this.cellSize);
                if (this.intialLevelData [newEntity.position.y] !== null)
                { console.log ("PLAYER POS line : " +  this.intialLevelData [newEntity.position.y] ); }
-                    //originalString.substring(0, newEntity.position.x) + 'P' + originalString.substring(newEntity.position.x + 1);
-
-
-                newEntity.draw();
                 break;
             case 1:
                 let pos = this.chooseSpawnPosition();
-                newEntity = new Slime(this.context2d, pos.x, pos.y);
-                newEntity.draw();
+                newEntity = new Slime(this.entityCount++, this.context2d, pos.x, pos.y);
                 break;
 
             default:
@@ -105,27 +115,34 @@ class EntityManager{
             y : 0
         };
 
-        let positionFree = false;
-        while (! positionFree){
-            pos.x = this.getRandomNumber(0, this.intialLevelData[0].length - 1);
-            pos.y = this.getRandomNumber(0, this.intialLevelData.length -1 );
+        //choose a random location within the map, check against other entity positions,
+        // if a position is free, return it.
+        let positionFound = false;
+        while (! positionFound){
+            pos.x = this.getRandomNumber(0, (this.intialLevelData[0].length -1 ) * this.cellSize );
+            pos.y = this.getRandomNumber(0, (this.intialLevelData.length - 1) * this.cellSize);
 
-          //  console.log("position to be checked: " + pos.x, + " " + pos.y);
+            positionFound = !this.checkPosition.collisionCheckAll(pos.x, pos.y, this.entites);
 
-            positionFree = this.checkPosition.positionFree(pos.x, pos.y, this.intialLevelData);
-
-          //  if (! positionFree) {console.log("while loop running and finding another position");}
+            if (! positionFound) {console.log("while loop running and finding another position");}
         }
 
-        let originalString =  this.intialLevelData[pos.y];
-        this.intialLevelData [pos.y ] = originalString.substring(0, pos.x) + 'O' + originalString.substring(pos.x + 1);
-
-        pos.x *= 32;
-        pos.y *= 32;
-
-      //  console.log(this.intialLevelData);
-
         return pos;
+    }
+
+    // main game loop. clear screen, update entities, redraw the screen
+    runEntityLogic = () => {
+        if (this.stopRunningLogic) { return; }
+
+        this.canvasManager.clearContext2d();
+
+        this.entites.forEach((entity)  => {
+            entity.update(this.entites);
+
+            entity.draw();
+        });
+
+        requestAnimationFrame(this.runEntityLogic);
     }
 
     getRandomNumber(min, max) {
@@ -136,8 +153,6 @@ class EntityManager{
         return Math.floor(randomDecimal * (max - min + 1)) + min;
     }
 }
-
-
 
 
 export default EntityManager;
