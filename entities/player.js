@@ -67,15 +67,14 @@ class Player extends Entity {
 
 
     //check movement inputs and try to move
-    update(entityManager){
+    update(entityArray){
         this.velocity.x = this.inputs.right - this.inputs.left;
         this.velocity.y = this.inputs.down - this.inputs.up;
 
-        this.movement.movePosition(this.id, this.position, this.velocity, entityManager);
+        this.movement.movePosition(this.id, this.position, this.velocity, entityArray);
 
         console.log("playerPos: " + this.position );
     }
-
 }
 
 

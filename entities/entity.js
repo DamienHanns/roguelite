@@ -27,7 +27,7 @@ class Entity {
      //   console.log("draw called");
     }
 
-    update(entityManager){
+    update(entityArray){
 
     }
 

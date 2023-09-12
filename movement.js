@@ -6,8 +6,8 @@ class Movement{
     this.collisionChecker = new CollisionChecker();
     }
 
-    //check the desired position, if the position is free then move to it.
-     movePosition(id, currentPosition, velocity, entityMap= [], size = 32){
+    //check if desired position is free then move to it.
+      movePosition(id, currentPosition, velocity, entityMap= [], size = 32){
 
         let desiredPosition = {
             x: currentPosition.x + velocity.x,
@@ -18,13 +18,15 @@ class Movement{
 
         if (bObstaclePresent){
             console.log("collision detected.")
-            return;
+            return false;
         }
 
          console.log("entity map size: ", entityMap.length);
 
         currentPosition.x += velocity.x;
         currentPosition.y += velocity.y;
+
+        return true;
     }
 
 }

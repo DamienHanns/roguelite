@@ -93,7 +93,7 @@ class EntityManager{
         let newEntity;
         switch (entityId){
             case 0:
-                newEntity = new Player(this.entityCount++,this.context2d, 5 * this.cellSize, 5 * this.cellSize);
+                newEntity = new Player(this.entityCount++,this.context2d, 5 * this.cellSize, 15 * this.cellSize);
                if (this.intialLevelData [newEntity.position.y] !== null)
                { console.log ("PLAYER POS line : " +  this.intialLevelData [newEntity.position.y] ); }
                 break;
