@@ -1,10 +1,10 @@
 WWWWWWWWWW
 ..W...W..W
 ..W...W..W
-..W......W
-..WWWWW..W
+..W.......
+..WWWWW...
 ..........
 ...WWWWW..
 .WW....WWW
 .......WW.
-...WWWWW..
+.......W..

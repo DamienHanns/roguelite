@@ -75,6 +75,8 @@ class Player extends Entity {
 
         console.log("playerPos: " + this.position );
     }
+
+
 }
 
 

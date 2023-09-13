@@ -1,7 +1,7 @@
-W..WWWWWWW
+W.....WWWW
 W..W.....W
 W..W.....W
-W..WWW..WW
+W..WWW..W.
 W.........
 W.........
 W.WWW.....
