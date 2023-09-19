@@ -7,3 +7,5 @@ class Success extends Entity{
         console.log("Success is attainable: " + this.position.x, this.position.y);
     }
 }
+
+export default Success;

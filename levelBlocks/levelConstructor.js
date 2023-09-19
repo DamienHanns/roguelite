@@ -1,5 +1,4 @@
-import Player from "../entities/player.js";
-import Wall from "../entities/wall.js";
+import getRandomNumber from "../rng.js";
 
 class LevelGenerator {
     constructor() {
@@ -34,7 +33,7 @@ class LevelGenerator {
         for(let i = 0; i < this.totalVerticalLevelBlocks; i++) {
 
             //choose a block file, randomised number used for file name
-            let fileIndex = this.getRandomNumber(0, 4);
+            let fileIndex = getRandomNumber(0, 4);
 
             let folderPath = this.levelBlockDirectories[this.blockDirectoriesIndex];
             let filename = 'level' + fileIndex + '.txt';
@@ -53,7 +52,7 @@ class LevelGenerator {
             for(let j = 0; j < this.totalVerticalLevelBlocks; j++) {
 
                 //randomise the number for use in the file name
-                let fileIndex = this.getRandomNumber(0, 4);
+                let fileIndex = getRandomNumber(0, 4);
                 let folderPath = this.levelBlockDirectories[this.blockDirectoriesIndex];
 
                 let filename = 'level' + fileIndex + '.txt';
@@ -68,6 +67,7 @@ class LevelGenerator {
             }
         }
 
+        this.setSuccessPosition();
     }
 
     //gets level data then pushes, or appends it, to the levelLayout[]
@@ -106,14 +106,37 @@ class LevelGenerator {
         }
     }
 
-    getRandomNumber(min, max) {
-        // Generate a random decimal number between 0 and 1
-        const randomDecimal = Math.random();
+    //todo move this functionality to the spawner.
+    setSuccessPosition(){
+        //loop through level array and take note of where all the success markers - "S" - are.
+        //replace all "S" with "." - ground tiles.
+        //after all are removed place one "S" back into the map.
+        let successPoints = [];
 
-        // Scale the random number to fit the desired range
-        return Math.floor(randomDecimal * (max - min + 1)) + min;
+        for (let verticalIndex = 0; verticalIndex < this.levelLayout.length; verticalIndex++){
+            for (let horizontalIndex = 0; horizontalIndex < this.levelLayout[verticalIndex].length; horizontalIndex++){
+                if (this.levelLayout[verticalIndex][horizontalIndex] === "S" ||
+                    this.levelLayout[verticalIndex][horizontalIndex] === "s"){
+
+                    let successPointPosition = {ver: verticalIndex, hor: horizontalIndex};
+
+                    successPoints.push(successPointPosition);
+
+                    this.levelLayout[verticalIndex] = this.levelLayout[verticalIndex].substring(0, horizontalIndex) + "." + this.levelLayout[verticalIndex].substring(horizontalIndex + 1);
+                }
+            }
+        }
+
+        let pointToKeepIndex = getRandomNumber(0, successPoints.length - 1);
+        let pointToKeep = successPoints[pointToKeepIndex];
+
+        this.levelLayout[pointToKeep.ver] = this.levelLayout[pointToKeep.ver].substring(0, pointToKeep.hor) + "S" +
+            this.levelLayout[pointToKeep.ver].substring(pointToKeep.hor + 1);
     }
 
+    changeSymbol(newSymbol, stringToChange, indexToChange){
+        return stringToChange.substring(0, indexToChange) + newSymbol + stringToChange.substring(indexToChange + 1);
+    }
 
     async getLevel(){
         await this.buildLevelLayout();

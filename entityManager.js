@@ -4,8 +4,11 @@
 import Wall from "./entities/wall.js";
 import Player from "./entities/player.js";
 import Slime from "./entities/slime.js";
+import Success from "./entities/success.js"
 
 import CollisionChecker from "./collisionChecker.js";
+import Entity from "./entities/entity.js";
+import success from "./entities/success.js";
 
 class EntityManager{
 
@@ -37,24 +40,21 @@ class EntityManager{
 
     //todo make sure that important things are placed where the player can access
     // or experience them.
-    spawnEntity(entityToSpawn, numberOfEntitiesToSpawn = 1, posX = 0, posY = 0){
-
-        //TODO add newly instantiated entities to entities list.
-
+    spawnEntity(entitiesToSpawn, numberOfEntitiesToSpawn = 1, posX = 0, posY = 0){
         // identify if an array has been passed.
         // if array is a string handle level map objects else
         // if array is a number handle objects by ID and quantity.
-        if (Array.isArray(entityToSpawn)){
+        if (Array.isArray(entitiesToSpawn)){
 
-            if (typeof entityToSpawn[0] === 'string') {
+            if (typeof entitiesToSpawn[0] === 'string') {
                 console.log("level data identified");
 
-                this.intialLevelData = entityToSpawn;
+                this.intialLevelData = entitiesToSpawn;
 
-                for (let verticalIndex = 0; verticalIndex < entityToSpawn.length; verticalIndex++){
-                    for (let horizontalIndex = 0; horizontalIndex < entityToSpawn[verticalIndex].length; horizontalIndex++){
-                        if (entityToSpawn[verticalIndex][horizontalIndex] === "W" ||
-                            entityToSpawn[verticalIndex][horizontalIndex] === "w"){
+                for (let verticalIndex = 0; verticalIndex < entitiesToSpawn.length; verticalIndex++){
+                    for (let horizontalIndex = 0; horizontalIndex < entitiesToSpawn[verticalIndex].length; horizontalIndex++){
+                        if (entitiesToSpawn[verticalIndex][horizontalIndex] === "W" ||
+                            entitiesToSpawn[verticalIndex][horizontalIndex] === "w"){
                             let wall = new Wall(this.entityCount++, this.context2d, horizontalIndex * this.cellSize, verticalIndex * this.cellSize);
                             wall.draw();
 
@@ -66,12 +66,12 @@ class EntityManager{
             //if the array is of numbers, each index position of the array represents a game entity type.
             //The value found in an index position lets us know how many of that entity type it needs to spawn in.
 
-            else if (typeof entityToSpawn[0] === 'number'){
+            else if (typeof entitiesToSpawn[0] === 'number'){
                 console.log("Array of character data identified");
-                for (let i = 0; i < entityToSpawn.length; i++) {
-                    if (entityToSpawn[i] > 0) {
+                for (let i = 0; i < entitiesToSpawn.length; i++) {
+                    if (entitiesToSpawn[i] > 0) {
                         const entityId = i;
-                        const numberToSpawn = entityToSpawn[i];
+                        const numberToSpawn = entitiesToSpawn[i];
 
                         for (let j = 0; j < numberToSpawn; j++){
                            this.instantiateEntity(entityId);
@@ -83,7 +83,7 @@ class EntityManager{
 
         } else {
             console.log("SINGLE ENTITY SPAWNING BRANCH");
-            let spawnedEntity = new entityToSpawn(this.entityCount++, this.context2d);
+            let spawnedEntity = new entitiesToSpawn(this.entityCount++, this.context2d);
             spawnedEntity.draw();
         }
     }
@@ -91,25 +91,34 @@ class EntityManager{
     //spawn in and increment the entity count to give each entity a unique id.l
     instantiateEntity(entityId){
         let newEntity;
+        let pos = {x:0, y:0};
         switch (entityId){
             case 0:
-                newEntity = new Player(this.entityCount++,this.context2d, 5 * this.cellSize, 15 * this.cellSize);
-               if (this.intialLevelData [newEntity.position.y] !== null)
-               { console.log ("PLAYER POS line : " +  this.intialLevelData [newEntity.position.y] ); }
+                newEntity = new Success(this.entityCount++, this.context2d);
+                pos = this.chooseSpawnPosition(newEntity);
+                newEntity.position.x = pos.x;
+                newEntity.position.y = pos.y;
+                console.log("Success RELOCATION: " + newEntity.position.x, newEntity.position.y);
                 break;
             case 1:
-                let pos = this.chooseSpawnPosition();
+                newEntity = new Player(this.entityCount++,this.context2d, 5 * this.cellSize, 15 * this.cellSize);
+                if (this.intialLevelData [newEntity.position.y] !== null)
+                { console.log ("PLAYER POS line : " +  this.intialLevelData [newEntity.position.y] ); }
+                break;
+            case 2:
+                pos = this.chooseSpawnPosition();
                 newEntity = new Slime(this.entityCount++, this.context2d, pos.x, pos.y);
                 break;
-
             default:
-                console.log("SWITCH OUT OF RANGE in instantiateEntity()");
+                console.log("SWITCH OUT OF RANGE in instantiateEntity() with: " + entityId + " id");
+                return;
         }
 
         this.entites.push(newEntity);
     }
 
-    chooseSpawnPosition(){
+    //todo create spawner class, create spawn logic for each different entities.
+    chooseSpawnPosition(entity = undefined){
         let pos = {
             x : 0,
             y : 0
@@ -117,14 +126,35 @@ class EntityManager{
 
         //choose a random location within the map, check against other entity positions,
         // if a position is free, return it.
-        let positionFound = false;
-        while (! positionFound){
-            pos.x = this.getRandomNumber(0, (this.intialLevelData[0].length -1 ) * this.cellSize );
-            pos.y = this.getRandomNumber(0, (this.intialLevelData.length - 1) * this.cellSize);
+        if (entity === undefined){
+            let positionFound = false;
+            while (! positionFound){
+                pos.x = this.getRandomNumber(0, (this.intialLevelData[0].length -1 ) * this.cellSize );
+                pos.y = this.getRandomNumber(0, (this.intialLevelData.length - 1) * this.cellSize);
 
-            positionFound = !this.checkPosition.collisionCheckAll(pos.x, pos.y, this.entites);
+                positionFound = !this.checkPosition.collisionCheckAll(pos.x, pos.y, this.entites);
 
-            if (! positionFound) {console.log("while loop running and finding another position");}
+                console.log("finding spawn location");
+
+                if (! positionFound) {console.log("while loop running and finding another position");}
+            }
+        }
+
+        //todo create a entitiesToSpawn signature for this function.
+        let entitiesToSpawn = [];
+        entitiesToSpawn = this.intialLevelData;
+
+        if (entity instanceof success){
+            for (let verticalIndex = 0; verticalIndex < entitiesToSpawn.length; verticalIndex++){
+                for (let horizontalIndex = 0; horizontalIndex < entitiesToSpawn[verticalIndex].length; horizontalIndex++){
+                    if (entitiesToSpawn[verticalIndex][horizontalIndex] === "S" ||
+                        entitiesToSpawn[verticalIndex][horizontalIndex] === "s"){
+                        pos.x = horizontalIndex * this.cellSize;
+                        pos.y = verticalIndex * this.cellSize;
+
+                    }
+                }
+            }
         }
 
         return pos;

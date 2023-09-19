@@ -20,8 +20,13 @@ const entityManager = new EntityManager(canvasManager);
 //get level data from the levelConstructor and spawn it into the game.
 //then populate the level environment.
 //TODO this only and directly spawns in level 1. Implement a better solution.
+console.log("level constructor call");
 await entityManager.spawnEntity(await levelConstructor.getLevel());
+
+console.log("level setup call");
 entityManager.spawnEntity(levelSetup.level1());
+
+console.log("AFTER level constructor call");
 
 console.log(entityManager.entites);
 

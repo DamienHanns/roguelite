@@ -4,7 +4,7 @@
 ..WWWWW..W
 .........W
 ..WWWWWW.W
-.........W
+......S..W
 ..WWWWW..W
-.........W
+..S....S.W
 WWWWWWWWWW
