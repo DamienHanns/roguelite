@@ -1,9 +1,7 @@
-import CollisionChecker from "./collisionChecker.js";
-import collisionChecker from "./collisionChecker.js";
 
 class Movement{
-    constructor() {
-    this.collisionChecker = new CollisionChecker();
+    constructor(collisionChecker) {
+    this.collisionChecker =  collisionChecker;
     }
 
     //check if desired position is free then move to it.
@@ -20,8 +18,6 @@ class Movement{
             console.log("collision detected.")
             return false;
         }
-
-         console.log("entity map size: ", entityMap.length);
 
         currentPosition.x += velocity.x;
         currentPosition.y += velocity.y;

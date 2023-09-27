@@ -10,6 +10,7 @@ import CollisionChecker from "./collisionChecker.js";
 import Entity from "./entities/entity.js";
 import success from "./entities/success.js";
 
+
 class EntityManager{
 
     constructor(canvasManager) {

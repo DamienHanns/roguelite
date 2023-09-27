@@ -1,13 +1,14 @@
-import entity from "./entities/entity.js";
-
 class CollisionChecker {
     constructor() {
-
+        this.objectsCollided = [];
     }
 
     //check corners of the object. if anyone corner is found within the bounds of any other object return true.
+    //ignores the object calling it.
     collisionCheck(id, posX, posY, entities= [], size = 32){
         //  console.log("position BEING checked: " + posX + " " + posY);
+
+        this.objectsCollided.length = 0;
 
         let collisionDetected = false;
 
@@ -18,23 +19,27 @@ class CollisionChecker {
             botRight : { x: posX + size, y: posY + size}
         };
 
-        entities.forEach(function(entity){
+        entities.forEach((entity) => {
             if (entity.id === id)  return;
 
             if (checkCorners(corners.topLeft, entity.position) ||
                 checkCorners(corners.topRight, entity.position) ||
                 checkCorners(corners.botLeft, entity.position) ||
                 checkCorners(corners.botRight, entity.position)
-            )
-            { collisionDetected = true; }
+            ){
+                this.objectsCollided.push(entity);
+                collisionDetected = true;
+            }
         });
 
         return collisionDetected;
     }
 
+
     //check position against all entities spawned
     collisionCheckAll(posX, posY, entities= [], size = 32){
       //  console.log("position BEING checked: " + posX + " " + posY);
+        this.objectsCollided.length = 0;
 
         let collisionDetected = false;
 
@@ -45,18 +50,20 @@ class CollisionChecker {
         botRight : { x: posX + size, y: posY + size}
         };
 
-        entities.forEach(function(entity){
+        entities.forEach((entity) => {
             if (checkCorners(corners.topLeft, entity.position) ||
                 checkCorners(corners.topRight, entity.position) ||
                 checkCorners(corners.botLeft, entity.position) ||
                 checkCorners(corners.botRight, entity.position)
             )
-            { collisionDetected = true; }
+            {
+                this.objectsCollided.push(entity);
+                collisionDetected = true;
+            }
         });
 
         return collisionDetected;
     }
-
 }
 
 function checkCorners (corner, otherCorner, size = 32){

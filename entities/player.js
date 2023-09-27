@@ -1,11 +1,15 @@
 import Entity from "./entity.js";
 import Movement from "../movement.js"
+import CollisionChecker from "../collisionChecker.js";
+import Success from "./success.js"
 
 class Player extends Entity {
     constructor(id, context2d, posX = 0, posY = 0, color = "red") {
         super(id, context2d, posX, posY, color);
 
-        this.movement = new Movement();
+        this.collisionChecker = new CollisionChecker();
+
+        this.movement = new Movement(this.collisionChecker);
 
         this.setupInputListenerDown();
         this.setupInputListenerUp();
@@ -71,11 +75,20 @@ class Player extends Entity {
         this.velocity.x = this.inputs.right - this.inputs.left;
         this.velocity.y = this.inputs.down - this.inputs.up;
 
-        this.movement.movePosition(this.id, this.position, this.velocity, entityArray);
+        let bHasCollided = !this.movement.movePosition(this.id, this.position, this.velocity, entityArray);
+        if (bHasCollided){ this.checkCollisions();}
 
-        console.log("playerPos: " + this.position );
     }
 
+    checkCollisions(){
+        let collisions = this.collisionChecker.objectsCollided;
+
+        for (let i = 0; i < collisions.length; i++){
+            if (collisions[i] instanceof Success){
+                console.log("Player has been successful");
+            }
+        }
+    }
 
 }
 

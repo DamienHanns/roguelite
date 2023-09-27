@@ -1,12 +1,16 @@
 import Entity from "./entity.js";
 import getRandomNumber from "../rng.js";
 import Movement from "../movement.js";
+import CollisionChecker from "../collisionChecker.js";
+
 
 class Slime extends Entity {
     constructor(id, context2d, posX = 7 * 32, posY = 14 * 32, color = "green") {
         super(id, context2d, posX, posY, color);
 
-        this.movement = new Movement();
+        this.collisionChecker = new CollisionChecker();
+
+        this.movement = new Movement(this.collisionChecker);
 
         this.velocity = {
             x : 0, y : 0
