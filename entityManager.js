@@ -4,11 +4,10 @@
 import Wall from "./entities/wall.js";
 import Player from "./entities/player.js";
 import Slime from "./entities/slime.js";
-import Success from "./entities/success.js"
 
 import CollisionChecker from "./collisionChecker.js";
 import Entity from "./entities/entity.js";
-import success from "./entities/success.js";
+import Success from "./entities/success.js";
 
 
 class EntityManager{
@@ -102,9 +101,12 @@ class EntityManager{
                 console.log("Success RELOCATION: " + newEntity.position.x, newEntity.position.y);
                 break;
             case 1:
-                newEntity = new Player(this.entityCount++,this.context2d, 5 * this.cellSize, 15 * this.cellSize);
-                if (this.intialLevelData [newEntity.position.y] !== null)
-                { console.log ("PLAYER POS line : " +  this.intialLevelData [newEntity.position.y] ); }
+                newEntity = new Player(this.entityCount++, this.context2d);
+                pos = this.chooseSpawnPosition(newEntity);
+                newEntity.position.x = pos.x;
+                newEntity.position.y = pos.y;
+
+                 console.log ("PLAYER POS line : " +  newEntity.position.x, newEntity.position.y );
                 break;
             case 2:
                 pos = this.chooseSpawnPosition();
@@ -145,7 +147,7 @@ class EntityManager{
         let entitiesToSpawn = [];
         entitiesToSpawn = this.intialLevelData;
 
-        if (entity instanceof success){
+        if (entity instanceof Success){
             for (let verticalIndex = 0; verticalIndex < entitiesToSpawn.length; verticalIndex++){
                 for (let horizontalIndex = 0; horizontalIndex < entitiesToSpawn[verticalIndex].length; horizontalIndex++){
                     if (entitiesToSpawn[verticalIndex][horizontalIndex] === "S" ||
@@ -153,6 +155,18 @@ class EntityManager{
                         pos.x = horizontalIndex * this.cellSize;
                         pos.y = verticalIndex * this.cellSize;
 
+                    }
+                }
+            }
+        } else {
+            if (entity instanceof Player){
+                for (let verticalIndex = 0; verticalIndex < entitiesToSpawn.length; verticalIndex++){
+                    for (let horizontalIndex = 0; horizontalIndex < entitiesToSpawn[verticalIndex].length; horizontalIndex++){
+                        if (entitiesToSpawn[verticalIndex][horizontalIndex] === "P" ||
+                            entitiesToSpawn[verticalIndex][horizontalIndex] === "p"){
+                            pos.x = horizontalIndex * this.cellSize;
+                            pos.y = verticalIndex * this.cellSize;
+                        }
                     }
                 }
             }

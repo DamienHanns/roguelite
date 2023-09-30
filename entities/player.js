@@ -4,8 +4,8 @@ import CollisionChecker from "../collisionChecker.js";
 import Success from "./success.js"
 
 class Player extends Entity {
-    constructor(id, context2d, posX = 0, posY = 0, color = "red") {
-        super(id, context2d, posX, posY, color);
+    constructor(id, context2d, posX = 7 * 32, posY = 14 * 32, color = "red", size = 30) {
+        super(id, context2d, posX, posY, color, size);
 
         this.collisionChecker = new CollisionChecker();
 
@@ -33,6 +33,7 @@ class Player extends Entity {
         document.addEventListener('keydown', (event) => {
             if ( event.key === 'a' ||  event.key === 'ArrowLeft') {
                 this.inputs.left = true;
+
             }
 
             if (event.key === 'd' || event.key === 'ArrowRight') {
@@ -75,7 +76,18 @@ class Player extends Entity {
         this.velocity.x = this.inputs.right - this.inputs.left;
         this.velocity.y = this.inputs.down - this.inputs.up;
 
-        let bHasCollided = !this.movement.movePosition(this.id, this.position, this.velocity, entityArray);
+        let movementThisFrame = {x:0, y:0};
+
+        movementThisFrame.x = this.velocity.x;
+
+        let bHasCollided = false;
+        bHasCollided = !this.movement.movePosition(this.id, this.position, movementThisFrame, entityArray, this.size.x);
+        if (bHasCollided){ this.checkCollisions();}
+
+        movementThisFrame.x = 0;
+        movementThisFrame.y = this.velocity.y;
+
+        bHasCollided = !this.movement.movePosition(this.id, this.position, movementThisFrame, entityArray, this.size.x);
         if (bHasCollided){ this.checkCollisions();}
 
     }
@@ -86,6 +98,7 @@ class Player extends Entity {
         for (let i = 0; i < collisions.length; i++){
             if (collisions[i] instanceof Success){
                 console.log("Player has been successful");
+                location.reload();
             }
         }
     }

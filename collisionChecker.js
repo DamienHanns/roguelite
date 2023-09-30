@@ -71,8 +71,6 @@ function checkCorners (corner, otherCorner, size = 32){
             corner.x <= otherCorner.x + size &&
             corner.y >= otherCorner.y &&
             corner.y <= otherCorner.y + size);
-
-
 }
 
 export default CollisionChecker;

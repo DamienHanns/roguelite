@@ -1,6 +1,6 @@
 //all object base class
 class Entity {
-    constructor(id, context2d, posX = 0, posY = 0, color = "orange",) {
+    constructor(id, context2d, posX = 0, posY = 0, color = "orange", size = 32) {
 
         this.id = id;
 
@@ -11,8 +11,8 @@ class Entity {
 
         //todo consider moving this if proper components are introduced.
         this.size = {
-            x : 32,
-            y : 32,
+            x : size,
+            y : size
         };
 
         this.context2d = context2d;
